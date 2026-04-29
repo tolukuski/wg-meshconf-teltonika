@@ -1,5 +1,7 @@
 # wg-meshconf-teltonika
 
-A fork of https://github.com/k4yt3x/wg-meshconf 
+A quick and lazy fork of https://github.com/k4yt3x/wg-meshconf 
 
-Config files edited to Teltonika format
+Config syntax edited to Teltonika format
+
+In database Name has to be "wgN" format ie wg15 and AllowedIP cant be empty
