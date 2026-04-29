@@ -343,6 +343,10 @@ class DatabaseManager:
             local_peer = database["peers"][peer]
 
             with (output / f"{peer}.conf").open("w") as config:
+                #config.write("[Interface]\n")
+                #config.write("# Name: {}\n".format(peer))
+                #config.write("Address = {}\n".format(", ".join(local_peer["Address"])))
+                #config.write("PrivateKey = {}\n".format(local_peer["PrivateKey"]))
 
                 config.write("config interface '{}'\n".format(peer))
                 config.write("\toption private_key '{}'\n".format(local_peer["PrivateKey"]))
@@ -355,6 +359,10 @@ class DatabaseManager:
                 config.write("\toption proto 'wireguard'\n")
                 config.write("\tlist addresses '{}'\n".format(", ".join(local_peer["Address"])))
                 config.write("\toption disabled '0'\n")
+
+                #for key in INTERFACE_OPTIONAL_ATTRIBUTES:
+                #    if local_peer.get(key) is not None:
+                #        config.write("{} = {}\n".format(key, local_peer[key]))
 
                 # generate [Peer] sections for all other peers
                 for p in [i for i in database["peers"] if i != peer]:
@@ -383,8 +391,17 @@ class DatabaseManager:
                     if remote_peer.get("Address") is not None:
                         if remote_peer.get("AllowedIPs") is not None:
                             allowed_ips = ", ".join(
+                                #remote_peer["Address"] + remote_peer["AllowedIPs"]
                                 remote_peer["AllowedIPs"]
                             )
                         else:
                             allowed_ips = ", ".join(remote_peer["Address"])
                         config.write("\tlist allowed_ips '{}'\n".format(allowed_ips))
+
+                    #for key in PEER_OPTIONAL_ATTRIBUTES_REMOTE:
+                    #    if remote_peer.get(key) is not None:
+                    #        config.write("{} = {}\n".format(key, remote_peer[key]))
+
+                    #for key in PEER_OPTIONAL_ATTRIBUTES_LOCAL:
+                    #    if local_peer.get(key) is not None:
+                    #        config.write("{} = {}\n".format(key, local_peer[key]))
