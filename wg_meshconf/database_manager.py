@@ -343,26 +343,18 @@ class DatabaseManager:
             local_peer = database["peers"][peer]
 
             with (output / f"{peer}.conf").open("w") as config:
-                #config.write("[Interface]\n")
-                #config.write("# Name: {}\n".format(peer))
-                #config.write("Address = {}\n".format(", ".join(local_peer["Address"])))
-                #config.write("PrivateKey = {}\n".format(local_peer["PrivateKey"]))
 
                 config.write("config interface '{}'\n".format(peer))
-                config.write("option private_key '{}'\n".format(local_peer["PrivateKey"]))
+                config.write("\toption private_key '{}'\n".format(local_peer["PrivateKey"]))
                 config.write(
-                        "option public_key '{}'\n".format(
+                        "\toption public_key '{}'\n".format(
                             self.wireguard.pubkey(local_peer["PrivateKey"])
                         )
                     )
-                config.write("option listen_port '51820'\n")
-                config.write("option proto 'wireguard'\n")
-                config.write("list addresses '{}'\n".format(", ".join(local_peer["Address"])))
-                config.write("option disabled '0'\n")
-
-                #for key in INTERFACE_OPTIONAL_ATTRIBUTES:
-                #    if local_peer.get(key) is not None:
-                #        config.write("{} = {}\n".format(key, local_peer[key]))
+                config.write("\toption listen_port '51820'\n")
+                config.write("\toption proto 'wireguard'\n")
+                config.write("\tlist addresses '{}'\n".format(", ".join(local_peer["Address"])))
+                config.write("\toption disabled '0'\n")
 
                 # generate [Peer] sections for all other peers
                 for p in [i for i in database["peers"] if i != peer]:
@@ -371,38 +363,28 @@ class DatabaseManager:
                     #config.write("\n[Peer]\n")
                     config.write("\nconfig wireguard_{} '{}'\n".format(peer, p))
                     #config.write("# Name: {}\n".format(p))
-                    config.write("option description '{}'\n".format(p))
+                    config.write("\toption description '{}'\n".format(p))
                     config.write(
-                        "option public_key '{}'\n".format(
+                        "\toption public_key '{}'\n".format(
                             self.wireguard.pubkey(remote_peer["PrivateKey"])
                         )
                     )
-                    config.write("option force_tunlink '0'\n")
+                    config.write("\toption force_tunlink '0'\n")
 
                     if remote_peer.get("Endpoint") is not None:
                         config.write(
-                            "option endpoint_host '{}:{}'\n".format(
+                            "\toption endpoint_host '{}'\n".format(
                                 remote_peer["Endpoint"],
-                                remote_peer["ListenPort"],
                             )
                         )
-                    config.write("option route_allowed_ips '0'\n")
-                    config.write("option tunlink 'any'\n")
+                    config.write("\toption route_allowed_ips '0'\n")
+                    config.write("\toption tunlink 'any'\n")
 
                     if remote_peer.get("Address") is not None:
                         if remote_peer.get("AllowedIPs") is not None:
                             allowed_ips = ", ".join(
-                                #remote_peer["Address"] + remote_peer["AllowedIPs"]
                                 remote_peer["AllowedIPs"]
                             )
                         else:
                             allowed_ips = ", ".join(remote_peer["Address"])
-                        config.write("list allowed_ips '{}'\n".format(allowed_ips))
-
-                    #for key in PEER_OPTIONAL_ATTRIBUTES_REMOTE:
-                    #    if remote_peer.get(key) is not None:
-                    #        config.write("{} = {}\n".format(key, remote_peer[key]))
-
-                    #for key in PEER_OPTIONAL_ATTRIBUTES_LOCAL:
-                    #    if local_peer.get(key) is not None:
-                    #        config.write("{} = {}\n".format(key, local_peer[key]))
+                        config.write("\tlist allowed_ips '{}'\n".format(allowed_ips))
