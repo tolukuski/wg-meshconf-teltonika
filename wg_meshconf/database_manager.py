@@ -381,7 +381,7 @@ class DatabaseManager:
 
                     if remote_peer.get("Endpoint") is not None:
                         config.write(
-                            "option endpoint_host '{}':'{}'\n".format(
+                            "option endpoint_host '{}:{}'\n".format(
                                 remote_peer["Endpoint"],
                                 remote_peer["ListenPort"],
                             )
@@ -392,7 +392,8 @@ class DatabaseManager:
                     if remote_peer.get("Address") is not None:
                         if remote_peer.get("AllowedIPs") is not None:
                             allowed_ips = ", ".join(
-                                remote_peer["Address"] + remote_peer["AllowedIPs"]
+                                #remote_peer["Address"] + remote_peer["AllowedIPs"]
+                                remote_peer["AllowedIPs"]
                             )
                         else:
                             allowed_ips = ", ".join(remote_peer["Address"])
